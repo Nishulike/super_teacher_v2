@@ -1,0 +1,1984 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Teacher - AI-Powered Learning Assistant</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #6366F1; /* Indigo-500 */
+            --secondary-color: #F59E42; /* Orange-400 */
+            --success-color: #10B981; /* Emerald-500 */
+            --danger-color: #D0021B;
+            --dark-color: #2C3E50;
+            --light-color: #ECF0F1;
+            --purple: #A78BFA;
+            --pink: #F472B6;
+            --blue: #60A5FA;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8fafc;
+            position: relative;
+        }
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 0;
+            pointer-events: none;
+            background: url('/static/images/blog_bg.jpeg');
+            background-size: 300px 300px;
+            background-repeat: repeat;
+            opacity: 0.18;
+        }
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 1;
+            pointer-events: none;
+            background: #fff;
+            opacity: 0.40;
+        }
+        .main-container, .blog-chat-section, .request-form-section {
+            position: relative;
+            z-index: 2;
+        }
+
+        .main-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 32px;
+            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.10), 0 2px 8px rgba(0,0,0,0.04);
+            backdrop-filter: blur(10px);
+            margin: 32px auto;
+            max-width: 1200px;
+            position: relative;
+            overflow: visible;
+        }
+
+        /* Decorative SVGs */
+        .decorative-svg {
+            position: absolute;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .svg-atom { left: 2rem; top: 2rem; width: 80px; height: 80px; opacity: 0.4; }
+        .svg-rocket { right: 6rem; top: 6rem; width: 64px; height: 96px; opacity: 0.4; }
+        .svg-calculator { left: 50%; bottom: 3rem; width: 80px; height: 80px; opacity: 0.4; transform: translateX(-50%); }
+        .svg-microscope { right: 2rem; bottom: 8rem; width: 80px; height: 80px; opacity: 0.4; }
+        .svg-sigma { left: 4rem; bottom: 10rem; width: 64px; height: 64px; opacity: 0.4; }
+        .svg-dna { left: 8rem; top: 50%; width: 64px; height: 128px; opacity: 0.4; transform: translateY(-50%); }
+        .svg-planet { right: 10rem; top: 50%; width: 80px; height: 80px; opacity: 0.4; transform: translateY(-50%); }
+        .svg-lightbulb { right: 2rem; top: 2rem; width: 56px; height: 56px; opacity: 0.4; }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), var(--pink));
+            color: white;
+            padding: 40px 30px 30px 30px;
+            border-radius: 32px 32px 0 0;
+            text-align: center;
+            box-shadow: 0 4px 24px rgba(99, 102, 241, 0.10);
+            position: relative;
+            z-index: 2;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* Request Form Styles */
+        .request-form-section {
+            padding: 40px 30px 30px 30px;
+            display: block;
+            border-radius: 0 0 32px 32px;
+            background: rgba(255,255,255,0.95);
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.04);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 0.5em;
+        }
+
+        .form-control, .form-select {
+            border: 2px solid #E1E8ED;
+            border-radius: 12px;
+            padding: 14px 18px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.15);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--pink));
+            border: none;
+            border-radius: 12px;
+            padding: 14px 36px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.10);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.15);
+        }
+
+        /* Blog Chat Styles */
+        .blog-chat-section {
+            padding: 40px 30px 30px 30px;
+            display: none;
+            min-height: 70vh;
+            overflow-y: auto;
+            background: rgba(255,255,255,0.95);
+            border-radius: 0 0 32px 32px;
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.04);
+            position: relative;
+        }
+
+        .chat-header {
+            background: var(--primary-color);
+            color: white;
+            padding: 18px 24px;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.10);
+        }
+
+        .chat-header h3 {
+            margin: 0;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5em;
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 10px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .message-container {
+            margin-bottom: 32px;
+            display: block;
+        }
+
+        .user-message {
+            background: linear-gradient(135deg, #a5d8ff, #60a5fa);
+            color: white;
+            padding: 22px;
+            border-radius: 18px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(99, 102, 241, 0.08);
+            width: auto;
+            max-width: none;
+        }
+
+        .bot-message {
+            background: white;
+            border: 2px solid var(--light-color);
+            border-radius: 18px;
+            padding: 28px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(99, 102, 241, 0.08);
+            width: auto;
+            max-width: none;
+        }
+
+        .message-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .message-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 18px;
+            font-size: 1.2rem;
+            overflow: hidden;
+            background: #fff;
+            border: 2px solid var(--primary-color);
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.10);
+        }
+
+        .user-avatar img, .bot-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .user-avatar {
+            background: #fff;
+            border: 2px solid var(--blue);
+        }
+        .bot-avatar {
+            background: #fff;
+            border: 2px solid var(--purple);
+        }
+
+        .message-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin: 0;
+            color: var(--primary-color);
+        }
+
+        .message-content {
+            line-height: 1.7;
+            color: #22223b;
+            font-size: 1.08rem;
+        }
+
+        .message-content h4 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .message-content h5 {
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .message-content p {
+            margin-bottom: 15px;
+        }
+
+        .message-content ul, .message-content ol {
+            margin-bottom: 15px;
+            padding-left: 20px;
+        }
+
+        .message-content li {
+            margin-bottom: 8px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Add/replace button styles for quick response buttons after explanation */
+        .quick-response-btn {
+            background: linear-gradient(135deg, #a5d8ff, #60a5fa);
+            color: white;
+            border: none;
+            border-radius: 18px;
+            padding: 14px 32px;
+            font-weight: 600;
+            font-size: 1.08rem;
+            box-shadow: 0 5px 15px rgba(99, 102, 241, 0.08);
+            transition: all 0.2s;
+            margin: 6px 8px;
+        }
+        .quick-response-btn:hover, .quick-response-btn:focus {
+            background: linear-gradient(135deg, #b6e0fe, #7ecbfa);
+            color: white;
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: 0 8px 18px rgba(99, 102, 241, 0.13);
+        }
+
+        /* Quiz Option Card Styles */
+        .quiz-options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 18px;
+            margin-bottom: 8px;
+        }
+        @media (max-width: 600px) {
+            .quiz-options-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .quiz-option-card {
+            display: flex;
+            align-items: center;
+            background: linear-gradient(135deg, #a5d8ff, #60a5fa);
+            color: #22223b;
+            border-radius: 32px;
+            box-shadow: 0 4px 16px rgba(99,102,241,0.10), 0 2px 8px rgba(0,0,0,0.04);
+            padding: 22px 28px;
+            font-size: 1.15rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: box-shadow 0.2s, transform 0.1s, border 0.2s, background 0.2s;
+            min-height: 64px;
+            position: relative;
+            margin-bottom: 0;
+        }
+        .quiz-option-card .quiz-option-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #6366F1;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            font-weight: 700;
+            margin-right: 18px;
+            flex-shrink: 0;
+        }
+        .quiz-option-card.active, .quiz-option-card:active {
+            background: linear-gradient(135deg, #6366F1, #a5d8ff);
+            color: #fff;
+            border: 3px solid #6366F1;
+            box-shadow: 0 8px 32px rgba(99,102,241,0.18), 0 4px 16px rgba(0,0,0,0.08);
+            transform: scale(1.03);
+        }
+        .quiz-option-card:hover, .quiz-option-card:focus {
+            background: linear-gradient(135deg, #b6e0fe, #7ecbfa);
+            color: #22223b;
+            border: 3px solid #60a5fa;
+            box-shadow: 0 8px 32px rgba(99,102,241,0.13), 0 4px 16px rgba(0,0,0,0.08);
+            transform: translateY(-2px) scale(1.02);
+        }
+        .quiz-option-label {
+            font-size: 1.2em;
+            font-weight: 700;
+            margin-right: 10px;
+        }
+        .quiz-option-text {
+            font-size: 1.08em;
+            font-weight: 500;
+        }
+        @media (max-width: 600px) {
+            .quiz-option-card { padding: 18px 16px; font-size: 1.05rem; }
+            .quiz-option-card .quiz-option-icon { margin-right: 12px; }
+        }
+
+        /* Ask Another Question Form Styles */
+        .ask-another-form {
+            background: #fff;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 14px 18px 10px 18px;
+            margin: 12px auto 8px auto;
+            box-shadow: 0 2px 8px rgba(99,102,241,0.07);
+            max-width: 380px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .ask-another-form h6 {
+            color: var(--primary-color);
+            font-weight: 700;
+            margin-bottom: 10px;
+            font-size: 1.02rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .ask-another-form .form-group {
+            margin-bottom: 8px;
+        }
+        .ask-another-form .form-label {
+            font-size: 0.93rem;
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 2px;
+        }
+        .ask-another-form .form-select, .ask-another-form .form-control {
+            border: 1.5px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 6px 8px;
+            font-size: 0.97rem;
+            background: #f9fafb;
+            min-height: 32px;
+        }
+        .ask-another-form .form-select:focus, .ask-another-form .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.13rem rgba(99,102,241,0.10);
+        }
+        .ask-another-form .btn-submit {
+            background: linear-gradient(135deg, var(--primary-color), var(--pink));
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 7px 0;
+            font-weight: 600;
+            font-size: 0.97rem;
+            margin-top: 6px;
+            width: 100%;
+            transition: all 0.2s;
+        }
+        .ask-another-form .btn-submit:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(99,102,241,0.13);
+        }
+        @media (max-width: 500px) {
+            .ask-another-form { max-width: 98vw; padding: 10px 4vw; }
+        }
+
+        .ask-another-card {
+            display: flex;
+            align-items: center;
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            color: #92400e;
+            border-radius: 32px;
+            box-shadow: 0 4px 16px rgba(251,191,36,0.10), 0 2px 8px rgba(0,0,0,0.04);
+            padding: 20px 28px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: box-shadow 0.2s, transform 0.1s, border 0.2s;
+            min-height: 64px;
+            position: relative;
+            margin-bottom: 0;
+        }
+        .ask-another-card:hover, .ask-another-card:focus {
+            background: linear-gradient(135deg, #fef3c7, #fbbf24);
+            border: 3px solid #f59e0b;
+            box-shadow: 0 8px 32px rgba(251,191,36,0.18), 0 4px 16px rgba(0,0,0,0.08);
+            transform: translateY(-2px) scale(1.02);
+        }
+        .ask-another-card .ask-another-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: #f59e0b;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            margin-right: 18px;
+            flex-shrink: 0;
+        }
+        .ask-another-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #92400e;
+        }
+        .ask-another-subtitle {
+            font-size: 0.95rem;
+            color: #b45309;
+            margin-top: 2px;
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                margin: 10px;
+                border-radius: 18px;
+            }
+            .header h1 {
+                font-size: 2rem;
+            }
+            .header, .request-form-section, .blog-chat-section {
+                padding: 18px 8px;
+            }
+        }
+        .action-card {
+            display: flex;
+            align-items: center;
+            background: #fff;
+            border-radius: 32px;
+            box-shadow: 0 4px 24px rgba(99,102,241,0.10), 0 2px 8px rgba(0,0,0,0.04);
+            padding: 24px 32px;
+            margin-bottom: 0;
+            cursor: pointer;
+            transition: box-shadow 0.2s, transform 0.1s;
+            min-height: 90px;
+            border: none;
+            position: relative;
+        }
+        .action-card:hover, .action-card:focus {
+            box-shadow: 0 8px 32px rgba(99,102,241,0.18), 0 4px 16px rgba(0,0,0,0.08);
+            transform: translateY(-2px) scale(1.02);
+        }
+        .action-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-right: 24px;
+            color: #fff;
+            flex-shrink: 0;
+        }
+        .action-understand .action-icon { background: #10B981; }
+        .action-quiz .action-icon { background: #6366F1; }
+        .action-5yo .action-icon { background: #A78BFA; }
+        .action-different .action-icon { background: #F472B6; }
+        .action-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #22223b;
+        }
+        .action-subtitle {
+            font-size: 1rem;
+            color: #6b7280;
+            margin-top: 2px;
+        }
+        @media (max-width: 768px) {
+            .action-card { flex-direction: column; align-items: flex-start; padding: 18px 16px; }
+            .action-icon { margin-right: 0; margin-bottom: 10px; }
+        }
+
+        /* Ask Another Question Modal Styles */
+        .ask-another-modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(180, 190, 210, 0.13);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .ask-another-modal {
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 8px 32px rgba(30,41,59,0.18), 0 2px 8px rgba(99,102,241,0.08);
+            max-width: 340px;
+            width: 92vw;
+            padding: 22px 20px 16px 20px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            animation: modalPopIn 0.18s cubic-bezier(.4,1.4,.6,1) 1;
+        }
+        @keyframes modalPopIn {
+            0% { transform: scale(0.85); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .ask-another-modal h6 {
+            color: var(--primary-color);
+            font-weight: 700;
+            margin-bottom: 12px;
+            font-size: 1.08rem;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+        .ask-another-modal .form-group {
+            margin-bottom: 8px;
+        }
+        .ask-another-modal .form-label {
+            font-size: 0.97rem;
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 2px;
+        }
+        .ask-another-modal .form-select, .ask-another-modal .form-control {
+            border: 1.5px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 6px 8px;
+            font-size: 0.97rem;
+            background: #f9fafb;
+            min-height: 32px;
+        }
+        .ask-another-modal .form-select:focus, .ask-another-modal .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.13rem rgba(99,102,241,0.10);
+        }
+        .ask-another-modal .btn-submit {
+            background: linear-gradient(135deg, var(--primary-color), var(--pink));
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 7px 0;
+            font-weight: 600;
+            font-size: 0.97rem;
+            margin-top: 6px;
+            width: 100%;
+            transition: all 0.2s;
+        }
+        .ask-another-modal .btn-submit:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(99,102,241,0.13);
+        }
+        .ask-another-modal .close-modal-btn {
+            position: absolute;
+            top: 10px;
+            right: 12px;
+            background: none;
+            border: none;
+            color: #64748b;
+            font-size: 1.25rem;
+            cursor: pointer;
+            padding: 2px 6px;
+            border-radius: 50%;
+            transition: background 0.15s;
+        }
+        .ask-another-modal .close-modal-btn:hover {
+            background: #f1f5f9;
+        }
+
+        #socraticInputArea {
+            text-align: center;
+        }
+        #socraticInputArea .form-control {
+            max-width: 400px;
+            margin: 0 auto;
+            display: block;
+        }
+    </style>
+<!-- Decorative SVGs for playful look -->
+<svg class="decorative-svg svg-atom" viewBox="0 0 64 64" fill="none"><ellipse cx="32" cy="32" rx="28" ry="12" stroke="#6366F1" stroke-width="3"/><ellipse cx="32" cy="32" rx="12" ry="28" stroke="#6366F1" stroke-width="3"/><circle cx="32" cy="32" r="4" fill="#6366F1"/></svg>
+<svg class="decorative-svg svg-rocket" viewBox="0 0 64 96" fill="none"><rect x="28" y="16" width="8" height="40" rx="4" fill="#F59E42"/><polygon points="32,8 40,24 24,24" fill="#F59E42"/><rect x="28" y="56" width="8" height="16" rx="4" fill="#F59E42"/></svg>
+<svg class="decorative-svg svg-calculator" viewBox="0 0 64 64" fill="none"><rect x="12" y="12" width="40" height="40" rx="8" fill="#10B981"/><rect x="20" y="20" width="8" height="8" fill="#fff"/><rect x="36" y="20" width="8" height="8" fill="#fff"/><rect x="20" y="36" width="8" height="8" fill="#fff"/><rect x="36" y="36" width="8" height="8" fill="#fff"/></svg>
+<svg class="decorative-svg svg-microscope" viewBox="0 0 64 64" fill="none"><rect x="28" y="12" width="8" height="28" rx="4" fill="#6366F1"/><rect x="20" y="40" width="24" height="8" rx="4" fill="#6366F1"/><circle cx="32" cy="52" r="6" fill="#6366F1"/></svg>
+<svg class="decorative-svg svg-sigma" viewBox="0 0 64 64" fill="none"><text x="50%" y="60%" text-anchor="middle" fill="#BE185D" font-size="48" font-weight="bold" dy=".3em">Σ</text></svg>
+<svg class="decorative-svg svg-dna" viewBox="0 0 64 128" fill="none"><path d="M16 16 Q32 64 16 112" stroke="#0C4A6E" stroke-width="4" fill="none"/><path d="M48 16 Q32 64 48 112" stroke="#0C4A6E" stroke-width="4" fill="none"/><line x1="16" y1="32" x2="48" y2="32" stroke="#0EA5E9" stroke-width="2"/><line x1="16" y1="64" x2="48" y2="64" stroke="#0EA5E9" stroke-width="2"/><line x1="16" y1="96" x2="48" y2="96" stroke="#0EA5E9" stroke-width="2"/></svg>
+<svg class="decorative-svg svg-planet" viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="12" fill="#FBBF24"/><ellipse cx="32" cy="36" rx="20" ry="6" fill="none" stroke="#F59E42" stroke-width="3"/></svg>
+<svg class="decorative-svg svg-lightbulb" viewBox="0 0 64 64" fill="none"><ellipse cx="32" cy="28" rx="12" ry="16" fill="#FDE68A"/><rect x="28" y="44" width="8" height="10" rx="4" fill="#F59E42"/><rect x="30" y="54" width="4" height="6" rx="2" fill="#F59E42"/></svg>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="main-container">
+            <!-- Header -->
+            <div class="header">
+                <h1><i class="fas fa-graduation-cap"></i> Super Teacher</h1>
+                <p>AI-Powered Learning Assistant</p>
+            </div>
+
+            <!-- Request Form Section -->
+            <div class="request-form-section" id="requestFormSection">
+                <form id="superTeacherForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="standard" class="form-label">
+                                    <i class="fas fa-user-graduate"></i> Standard
+                                </label>
+                                <select class="form-select" id="standard" name="standard" required>
+                                    <option value="">Select Standard</option>
+                                    {% for standard in standards %}
+                                    <option value="{{ standard }}">{{ standard }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="subject" class="form-label">
+                                    <i class="fas fa-book"></i> Subject
+                                </label>
+                                <select class="form-select" id="subject" name="subject" required>
+                                    <option value="">Select Subject</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="chapter" class="form-label">
+                                    <i class="fas fa-list"></i> Chapter
+                                </label>
+                                <select class="form-select" id="chapter" name="chapter" required>
+                                    <option value="">Select Chapter</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="topic" class="form-label">
+                                    <i class="fas fa-lightbulb"></i> Topic
+                                </label>
+                                <select class="form-select" id="topic" name="topic" required>
+                                    <option value="">Select Topic</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="learningObjective" class="form-label">
+                            <i class="fas fa-bullseye"></i> Learning Objective
+                        </label>
+                        <textarea class="form-control" id="learningObjective" name="learning_objective" rows="3" 
+                                  placeholder="What should the student learn from this topic?"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="prerequisiteKnowledge" class="form-label">
+                            <i class="fas fa-layer-group"></i> Prerequisite Knowledge
+                        </label>
+                        <textarea class="form-control" id="prerequisiteKnowledge" name="prerequisite_knowledge" rows="3" 
+                                  placeholder="What knowledge should the student have before learning this topic?"></textarea>
+                    </div>
+                    
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-paper-plane"></i> Send Request to Super Teacher
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Blog Chat Section -->
+            <div class="blog-chat-section" id="blogChatSection">
+                <div class="chat-header">
+                    <h3><i class="fas fa-comments"></i> Learning Session</h3>
+                    <button class="back-btn" onclick="showRequestForm()">
+                        <i class="fas fa-arrow-left"></i> Back to Form
+                    </button>
+                </div>
+                
+                <div id="chatMessages">
+                    <!-- Messages will be added here -->
+                </div>
+                
+                <div class="text-center mt-3" id="hookButtons" style="display: none;">
+                    <button class="btn btn-success me-2" id="yesBtn"><i class="fas fa-check"></i> Yes</button>
+                    <button class="btn btn-danger" id="noBtn"><i class="fas fa-times"></i> No</button>
+                </div>
+                
+                <div class="text-center mt-3" id="explanationButtons" style="display: none;">
+                    <div class="row justify-content-center g-3" style="max-width:700px;margin:auto;">
+                        <div class="col-12 col-md-6">
+                            <div class="action-card action-understand" id="understandCard">
+                                <div class="action-icon"><i class="fas fa-check"></i></div>
+                                <div class="action-content">
+                                    <div class="action-title">I understand</div>
+                                    <div class="action-subtitle">Ready to move on</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="action-card action-quiz" id="quizCard">
+                                <div class="action-icon"><i class="fas fa-brain"></i></div>
+                                <div class="action-content">
+                                    <div class="action-title">Take a quiz</div>
+                                    <div class="action-subtitle">Test your knowledge</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="action-card action-5yo" id="fiveyoCard">
+                                <div class="action-icon"><span style="font-size:1.5em;">👶</span></div>
+                                <div class="action-content">
+                                    <div class="action-title">Explain like I'm 5</div>
+                                    <div class="action-subtitle">Make it super simple</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="action-card action-different" id="differentApproachCard">
+                                <div class="action-icon"><i class="fas fa-sync-alt"></i></div>
+                                <div class="action-content">
+                                    <div class="action-title">Different approach</div>
+                                    <div class="action-subtitle">Try another method</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-3" id="askAnotherSection" style="display: none;">
+                    <div class="row justify-content-center">
+                        <div class="col-12 col-md-8">
+                            <div class="ask-another-card" id="askAnotherCard">
+                                <div class="ask-another-icon"><i class="fas fa-plus-circle"></i></div>
+                                <div class="action-content">
+                                    <div class="ask-another-title">Ask Another Question</div>
+                                    <div class="ask-another-subtitle">Continue learning with a new topic</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-3" id="quizArea" style="display: none;"></div>
+                
+                <div class="loading" id="loading" style="display: none;">
+                    <div class="spinner"></div>
+                    <p class="mt-3">Super Teacher is thinking...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentSessionData = null;
+
+        // Dynamic selection functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize standard change handler
+            document.getElementById('standard').addEventListener('change', loadSubjects);
+            
+            // Initialize subject change handler
+            document.getElementById('subject').addEventListener('change', loadChapters);
+            
+            // Initialize chapter change handler
+            document.getElementById('chapter').addEventListener('change', loadTopics);
+        });
+
+        async function loadSubjects() {
+            const standardSelect = document.getElementById('standard');
+            const subjectSelect = document.getElementById('subject');
+            const chapterSelect = document.getElementById('chapter');
+            const topicSelect = document.getElementById('topic');
+            
+            const selectedStandard = standardSelect.value;
+            
+            // Reset dependent dropdowns
+            subjectSelect.innerHTML = '<option value="">Select Subject</option>';
+            chapterSelect.innerHTML = '<option value="">Select Chapter</option>';
+            topicSelect.innerHTML = '<option value="">Select Topic</option>';
+            
+            if (!selectedStandard) return;
+            
+            try {
+                const response = await fetch('/api/subjects', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        standard: selectedStandard
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.subjects) {
+                    result.subjects.forEach(subject => {
+                        const option = document.createElement('option');
+                        option.value = subject;
+                        option.textContent = subject;
+                        subjectSelect.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading subjects:', error);
+            }
+        }
+
+        async function loadChapters() {
+            const standardSelect = document.getElementById('standard');
+            const subjectSelect = document.getElementById('subject');
+            const chapterSelect = document.getElementById('chapter');
+            const topicSelect = document.getElementById('topic');
+            
+            const selectedStandard = standardSelect.value;
+            const selectedSubject = subjectSelect.value;
+            
+            // Reset dependent dropdowns
+            chapterSelect.innerHTML = '<option value="">Select Chapter</option>';
+            topicSelect.innerHTML = '<option value="">Select Topic</option>';
+            
+            if (!selectedStandard || !selectedSubject) return;
+            
+            try {
+                const response = await fetch('/api/chapters', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        standard: selectedStandard,
+                        subject: selectedSubject
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.chapters) {
+                    result.chapters.forEach(chapter => {
+                        const option = document.createElement('option');
+                        option.value = chapter;
+                        option.textContent = chapter;
+                        chapterSelect.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading chapters:', error);
+            }
+        }
+
+        async function loadTopics() {
+            const standardSelect = document.getElementById('standard');
+            const subjectSelect = document.getElementById('subject');
+            const chapterSelect = document.getElementById('chapter');
+            const topicSelect = document.getElementById('topic');
+            
+            const selectedStandard = standardSelect.value;
+            const selectedSubject = subjectSelect.value;
+            const selectedChapter = chapterSelect.value;
+            
+            // Reset dependent dropdown
+            topicSelect.innerHTML = '<option value="">Select Topic</option>';
+            
+            if (!selectedStandard || !selectedSubject || !selectedChapter) return;
+            
+            try {
+                const response = await fetch('/api/topics', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        standard: selectedStandard,
+                        subject: selectedSubject,
+                        chapter: selectedChapter
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.topics) {
+                    result.topics.forEach(topic => {
+                        const option = document.createElement('option');
+                        option.value = topic;
+                        option.textContent = topic;
+                        topicSelect.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading topics:', error);
+            }
+        }
+
+        document.getElementById('superTeacherForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const data = {
+                standard: formData.get('standard'),
+                subject: formData.get('subject'),
+                chapter: formData.get('chapter'),
+                topic: formData.get('topic'),
+                learning_objective: formData.get('learning_objective'),
+                prerequisite_knowledge: formData.get('prerequisite_knowledge'),
+                student_id: 'student_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9)
+            };
+
+            // Store session data
+            currentSessionData = data;
+
+            // Show chat interface
+            showBlogChat();
+
+            // Add user message (the generated prompt)
+            const initialMessage = createInitialMessage(data);
+            addMessage('user', 'Learning Request', initialMessage);
+
+            // Show loading
+            document.getElementById('loading').style.display = 'block';
+
+            // Request a hook question from the backend
+            try {
+                const response = await fetch('/api/process', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        user_input: initialMessage,
+                        grade_level: data.standard,
+                        subject: data.subject,
+                        topic: data.topic,
+                        student_id: data.student_id,
+                        action: 'hook'
+                    })
+                });
+
+                const result = await response.json();
+                document.getElementById('loading').style.display = 'none';
+
+                if (result.error) {
+                    addMessage('bot', 'Error', `Sorry, I encountered an error: ${result.error}`);
+                } else if (result.type === 'hook') {
+                    addMessage('bot', 'Super Teacher', formatResponse(result.response));
+                    showHookButtons();
+                } else {
+                    addMessage('bot', 'Super Teacher', formatResponse(result.response));
+                }
+            } catch (error) {
+                document.getElementById('loading').style.display = 'none';
+                addMessage('bot', 'Error', 'Network error. Please try again.');
+            }
+        });
+
+        function createInitialMessage(data) {
+            return `Hey, I need your help to break down the topic "${data.topic}" into 4 simple learning steps.
+
+Here's what you should know:
+
+Standard: ${data.standard}
+Subject: ${data.subject}
+Chapter: ${data.chapter}
+Topic: ${data.topic}
+Learning Objective: ${data.learning_objective || 'Not specified'}
+Prerequisite Knowledge: ${data.prerequisite_knowledge || 'Not specified'}
+
+I want a detailed, easy-to-understand explanation for each step. Use simple language, add real-life examples wherever possible, and if there are types, categories, or different variations of the topic, please include those too.
+
+Basically, I want a clear, structured explanation that makes it easy for beginners to understand the topic confidently.`;
+        }
+
+        function showBlogChat() {
+            document.getElementById('requestFormSection').style.display = 'none';
+            document.getElementById('blogChatSection').style.display = 'block';
+        }
+
+        function showRequestForm() {
+            document.getElementById('blogChatSection').style.display = 'none';
+            document.getElementById('requestFormSection').style.display = 'block';
+            document.getElementById('chatMessages').innerHTML = '';
+        }
+
+        function addMessage(sender, title, content) {
+            const chatMessages = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message-container';
+            
+            const messageClass = sender === 'user' ? 'user-message' : 'bot-message';
+            const avatarClass = sender === 'user' ? 'user-avatar' : 'bot-avatar';
+            const avatarImg = sender === 'user'
+                ? '<img src="/static/images/user-avatar.png" alt="User" />'
+                : '<img src="/static/images/mentor2.png" alt="Super Teacher" />';
+            
+            messageDiv.innerHTML = `
+                <div class="${messageClass}">
+                    <div class="message-header">
+                        <div class="message-avatar ${avatarClass}">
+                            ${avatarImg}
+                        </div>
+                        <div>
+                            <h5 class="message-title">${title}</h5>
+                        </div>
+                    </div>
+                    <div class="message-content">
+                        ${formatMessageContent(content)}
+                    </div>
+                </div>
+            `;
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function formatMessageContent(content) {
+            // Convert line breaks to HTML
+            let formatted = content.replace(/\n/g, '<br>');
+            
+            // Add some basic styling for better readability
+            formatted = formatted.replace(/<br><br>/g, '</p><p>');
+            formatted = formatted.replace(/^/, '<p>');
+            formatted = formatted.replace(/$/, '</p>');
+            
+            return formatted;
+        }
+
+        function formatResponse(text) {
+            // Convert line breaks to HTML
+            return text.replace(/\n/g, '<br>');
+        }
+
+        function showHookButtons() {
+            document.getElementById('hookButtons').style.display = 'block';
+            document.getElementById('yesBtn').onclick = async function() {
+                await handleHookResponse('yes');
+            };
+            document.getElementById('noBtn').onclick = async function() {
+                await handleHookResponse('no');
+            };
+        }
+
+        async function handleHookResponse(answer) {
+            document.getElementById('hookButtons').style.display = 'none';
+            document.getElementById('loading').style.display = 'block';
+            // Add user message for Yes/No
+            addMessage('user', 'Your Response', answer === 'yes' ? 'Yes, tell me more!' : 'No, not right now.');
+            try {
+                const response = await fetch('/api/process', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: answer,
+                        grade_level: currentSessionData.standard,
+                        subject: currentSessionData.subject,
+                        topic: currentSessionData.topic,
+                        student_id: currentSessionData.student_id
+                    })
+                });
+                const result = await response.json();
+                document.getElementById('loading').style.display = 'none';
+                if (result.error) {
+                    addMessage('bot', 'Error', `Sorry, I encountered an error: ${result.error}`);
+                } else if (result.type === 'explanation') {
+                    addMessage('bot', 'Super Teacher', formatResponse(result.response));
+                    showExplanationButtons();
+                } else if (result.type === 'end') {
+                    addMessage('bot', 'Super Teacher', formatResponse(result.response));
+                } else {
+                    addMessage('bot', 'Super Teacher', formatResponse(result.response));
+                }
+            } catch (error) {
+                document.getElementById('loading').style.display = 'none';
+                addMessage('bot', 'Error', 'Network error. Please try again.');
+            }
+        }
+
+        // Show explanation buttons after explanation
+        function showExplanationButtons() {
+            document.getElementById('explanationButtons').style.display = 'block';
+            document.getElementById('understandCard').onclick = async function() {
+                await handleExplanationAction('understand');
+            };
+            document.getElementById('quizCard').onclick = async function() {
+                await handleExplanationAction('quiz');
+            };
+            document.getElementById('fiveyoCard').onclick = async function() {
+                document.getElementById('explanationButtons').style.display = 'none';
+                addMessage('user', 'Your Response', "Explain like I'm a 5-year-old!");
+                document.getElementById('loading').style.display = 'block';
+                const response = await fetch('/api/process', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'fiveyo',
+                        grade_level: currentSessionData.standard,
+                        subject: currentSessionData.subject,
+                        topic: currentSessionData.topic,
+                        student_id: currentSessionData.student_id
+                    })
+                });
+                const result = await response.json();
+                document.getElementById('loading').style.display = 'none';
+                if (result.error) {
+                    addMessage('bot', 'Error', `Sorry, I encountered an error: ${result.error}`);
+                } else if (result.type === 'fiveyo') {
+                    addMessage('bot', 'Super Teacher', formatResponse(result.response));
+                    showFiveYoButtons();
+                } else {
+                    addMessage('bot', 'Super Teacher', formatResponse(result.response));
+                }
+            };
+            document.getElementById('differentApproachCard').onclick = function() {
+                document.getElementById('explanationButtons').style.display = 'none';
+                showSocraticInput();
+            };
+        }
+
+        // Socratic Bloom's Mastery Flow
+        let socraticSession = {
+            inProgress: false,
+            studentId: null,
+            questions: [],
+            currentIndex: 0,
+            startTime: null,
+            times: [],
+            answers: [],
+            levels: []
+        };
+
+        // Override showSocraticInput to start the Socratic Bloom's flow
+        function showSocraticInput() {
+            // Start Socratic session
+            socraticSession.inProgress = true;
+            socraticSession.studentId = currentSessionData.student_id;
+            socraticSession.questions = [];
+            socraticSession.currentIndex = 0;
+            socraticSession.times = [];
+            socraticSession.answers = [];
+            socraticSession.levels = [];
+            document.getElementById('quizArea').style.display = 'none';
+            // Remove any existing input area
+            let area = document.getElementById('socraticInputArea');
+            if (area) area.remove();
+            addMessage('bot', 'Super Teacher', 'Let\'s try a different approach! I\'ll ask you 6 questions, one for each level of Bloom\'s Taxonomy. Answer each as best you can.');
+            document.getElementById('loading').style.display = 'block';
+            fetch('/api/socratic/start', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    student_id: socraticSession.studentId,
+                    grade_level: currentSessionData.standard,
+                    subject: currentSessionData.subject,
+                    topic: currentSessionData.topic
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('loading').style.display = 'none';
+                if (data.error) {
+                    addMessage('bot', 'Error', data.error);
+                    socraticSession.inProgress = false;
+                    return;
+                }
+                socraticSession.questions = [data.question];
+                socraticSession.levels = [data.level];
+                socraticSession.currentIndex = 0;
+                socraticSession.startTime = Date.now();
+                showSocraticQuestion(data.question, data.level, 0);
+            });
+        }
+
+        function showSocraticQuestion(question, level, index) {
+            // Remove any existing input area
+            let area = document.getElementById('socraticInputArea');
+            if (area) area.remove();
+            area = document.createElement('div');
+            area.className = 'text-center mt-3';
+            area.id = 'socraticInputArea';
+            area.innerHTML = `
+                <div class="card p-3 mb-3"><h5>Bloom's Level: ${level.charAt(0).toUpperCase() + level.slice(1)}</h5><p>${question}</p></div>
+                <input type="text" id="socraticUserInput" class="form-control mb-2" placeholder="Type your answer here..." />
+                <button class="btn btn-info ms-2" id="socraticSubmitBtn"><i class="fas fa-reply"></i> Submit</button>
+            `;
+            document.querySelector('.blog-chat-section').appendChild(area);
+            document.getElementById('socraticUserInput').focus();
+            document.getElementById('socraticSubmitBtn').onclick = function() {
+                const userInput = document.getElementById('socraticUserInput').value.trim();
+                if (!userInput) return;
+                // Track time
+                const endTime = Date.now();
+                const timeTaken = Math.max(5, Math.round((endTime - socraticSession.startTime)/1000));
+                socraticSession.times[index] = timeTaken;
+                socraticSession.answers[index] = userInput;
+                addMessage('user', `Your Answer (Level: ${level})`, userInput);
+                document.getElementById('socraticInputArea').remove();
+                document.getElementById('loading').style.display = 'block';
+                fetch('/api/socratic/answer', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        student_id: socraticSession.studentId,
+                        answer: userInput,
+                        index: index
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('loading').style.display = 'none';
+                    if (data.error) {
+                        addMessage('bot', 'Error', data.error);
+                        socraticSession.inProgress = false;
+                        return;
+                    }
+                    if (data.question && typeof data.index === 'number' && data.index > index) {
+                        // Next question
+                        socraticSession.questions[data.index] = data.question;
+                        socraticSession.levels[data.index] = data.level;
+                        socraticSession.currentIndex = data.index;
+                        socraticSession.startTime = Date.now();
+                        if (data.feedback) {
+                            addMessage('bot', 'Super Teacher', data.feedback);
+                        }
+                        showSocraticQuestion(data.question, data.level, data.index);
+                    } else if (data.overall_score !== undefined) {
+                        // Session complete, show results
+                        showSocraticResults(data);
+                        socraticSession.inProgress = false;
+                    }
+                });
+            };
+        }
+
+        function showSocraticResults(data) {
+            let html = `<b>Bloom's Mastery Results</b><br>`;
+            html += `<b>Overall Score:</b> ${Math.round(data.overall_score)}%<br>`;
+            html += `<b>Average Time per Question:</b> ${Math.round(data.avg_time)} seconds<br>`;
+            html += `<b>Level Breakdown:</b><ul>`;
+            for (const [level, score] of Object.entries(data.breakdown)) {
+                html += `<li><b>${level.charAt(0).toUpperCase() + level.slice(1)}:</b> ${score}%</li>`;
+            }
+            html += `</ul>`;
+            if (data.message) html += `<b>Message:</b> ${data.message}<br>`;
+            addMessage('bot', 'Socratic Results', html);
+            // Mastery loop: if not mastery, show next weak-level question one by one
+            if (!data.mastery && data.next_weak_level && data.next_question) {
+                addMessage('bot', 'Super Teacher', `Let's focus on: ${data.next_weak_level.charAt(0).toUpperCase() + data.next_weak_level.slice(1)}`);
+                let area = document.getElementById('socraticInputArea');
+                if (area) area.remove();
+                area = document.createElement('div');
+                area.className = 'text-center mt-3';
+                area.id = 'socraticInputArea';
+                let formHtml = `<form id="masteryRetryForm">
+                    <div class="card p-3 mb-3"><h5>Bloom's Level: ${data.next_weak_level.charAt(0).toUpperCase() + data.next_weak_level.slice(1)}</h5><p>${data.next_question}</p>
+                    <input type="text" class="form-control mb-2" name="${data.next_weak_level}" placeholder="Type your answer here..." style="max-width: 400px; display: inline-block;" required /></div>
+                    <button class="btn btn-info ms-2" type="submit"><i class="fas fa-reply"></i> Submit</button></form>`;
+                area.innerHTML = formHtml;
+                document.querySelector('.blog-chat-section').appendChild(area);
+                document.getElementById('masteryRetryForm').onsubmit = async function(e) {
+                    e.preventDefault();
+                    const formData = new FormData(this);
+                    let answer = formData.get(data.next_weak_level);
+                    addMessage('user', `Your Answer (Level: ${data.next_weak_level.charAt(0).toUpperCase() + data.next_weak_level.slice(1)})`, answer);
+                    area.remove();
+                    document.getElementById('loading').style.display = 'block';
+                    // Track all answers for this session
+                    if (!window._allMasteryAnswers) window._allMasteryAnswers = {};
+                    window._allMasteryAnswers[data.next_weak_level] = answer;
+                    // Call backend for next weak level or mastery check
+                    const response = await fetch('/api/socratic/answer', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            student_id: socraticSession.studentId,
+                            answer: '', // not used in mastery loop
+                            index: 5, // not used in mastery loop
+                            all_answers: window._allMasteryAnswers,
+                            weak_levels: data.weak_levels,
+                            retry_index: (data.retry_index || 0) + 1
+                        })
+                    });
+                    const result = await response.json();
+                    document.getElementById('loading').style.display = 'none';
+                    showSocraticResults(result);
+                };
+            } else if (!data.mastery && data.weak_levels && data.weak_levels.length > 0) {
+                // If all weak levels retried, but still not mastery, re-evaluate
+                addMessage('bot', 'Super Teacher', `Let's check your progress again!`);
+                // Reset for next round if needed
+                window._allMasteryAnswers = {};
+                // Offer next steps
+                let area = document.getElementById('socraticInputArea');
+                if (area) area.remove();
+                area = document.createElement('div');
+                area.className = 'text-center mt-3';
+                area.id = 'socraticInputArea';
+                area.innerHTML = `
+                    <button class="quick-response-btn" id="socQuizBtn"><i class="fas fa-question-circle"></i> Take Quiz</button>
+                    <button class="quick-response-btn" id="socAskAnotherBtn"><i class="fas fa-comment"></i> Ask Another Question</button>
+                `;
+                document.querySelector('.blog-chat-section').appendChild(area);
+                document.getElementById('socQuizBtn').onclick = function() {
+                    handleExplanationAction('quiz');
+                };
+                document.getElementById('socAskAnotherBtn').onclick = function() {
+                    showRequestForm();
+                };
+            } else {
+                // Mastery achieved or no more weak levels
+                window._allMasteryAnswers = {};
+                let area = document.getElementById('socraticInputArea');
+                if (area) area.remove();
+                area = document.createElement('div');
+                area.className = 'text-center mt-3';
+                area.id = 'socraticInputArea';
+                area.innerHTML = `
+                    <button class="quick-response-btn" id="socQuizBtn"><i class="fas fa-question-circle"></i> Take Quiz</button>
+                    <button class="quick-response-btn" id="socAskAnotherBtn"><i class="fas fa-comment"></i> Ask Another Question</button>
+                `;
+                document.querySelector('.blog-chat-section').appendChild(area);
+                document.getElementById('socQuizBtn').onclick = function() {
+                    handleExplanationAction('quiz');
+                };
+                document.getElementById('socAskAnotherBtn').onclick = function() {
+                    showRequestForm();
+                };
+            }
+        }
+
+        function showFiveYoButtons() {
+            // Remove any existing
+            let area = document.getElementById('fiveyoBtnsArea');
+            if (area) area.remove();
+            area = document.createElement('div');
+            area.className = 'text-center mt-3';
+            area.id = 'fiveyoBtnsArea';
+            area.innerHTML = `
+                <button class="quick-response-btn" id="fiveyoUnderstandBtn"><i class="fas fa-thumbs-up"></i> I Understand</button>
+                <button class="quick-response-btn" id="fiveyoAnotherBtn"><i class="fas fa-lightbulb"></i> Explain with Another Example</button>
+            `;
+            document.querySelector('.blog-chat-section').appendChild(area);
+            document.getElementById('fiveyoUnderstandBtn').onclick = async function() {
+                area.style.display = 'none';
+                addMessage('user', 'Your Response', 'I understand!');
+                document.getElementById('loading').style.display = 'block';
+                const response = await fetch('/api/process', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'fiveyo_understand',
+                        grade_level: currentSessionData.standard,
+                        subject: currentSessionData.subject,
+                        topic: currentSessionData.topic,
+                        student_id: currentSessionData.student_id
+                    })
+                });
+                const result = await response.json();
+                document.getElementById('loading').style.display = 'none';
+                if (result.error) {
+                    addMessage('bot', 'Error', `Sorry, I encountered an error: ${result.error}`);
+                } else {
+                    addMessage('bot', 'Super Teacher', formatResponse(result.response));
+                    showAskAnotherSection();
+                }
+            };
+            document.getElementById('fiveyoAnotherBtn').onclick = async function() {
+                area.style.display = 'none';
+                addMessage('user', 'Your Response', 'Explain with another example!');
+                document.getElementById('loading').style.display = 'block';
+                const response = await fetch('/api/process', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'fiveyo_another_example',
+                        grade_level: currentSessionData.standard,
+                        subject: currentSessionData.subject,
+                        topic: currentSessionData.topic,
+                        student_id: currentSessionData.student_id
+                    })
+                });
+                const result = await response.json();
+                document.getElementById('loading').style.display = 'none';
+                if (result.error) {
+                    addMessage('bot', 'Error', `Sorry, I encountered an error: ${result.error}`);
+                } else if (result.type === 'fiveyo_example') {
+                    addMessage('bot', 'Super Teacher', formatResponse(result.response));
+                    showFiveYoExampleYesNo();
+                } else {
+                    addMessage('bot', 'Super Teacher', formatResponse(result.response));
+                }
+            };
+        }
+
+        function showFiveYoExampleYesNo() {
+            // Remove any existing
+            let area = document.getElementById('fiveyoExampleYesNoArea');
+            if (area) area.remove();
+            area = document.createElement('div');
+            area.className = 'text-center mt-3';
+            area.id = 'fiveyoExampleYesNoArea';
+            area.innerHTML = `
+                <button class="quick-response-btn" id="fiveyoExampleYesBtn"><i class="fas fa-check"></i> Yes</button>
+                <button class="quick-response-btn" id="fiveyoExampleNoBtn"><i class="fas fa-times"></i> No</button>
+            `;
+            document.querySelector('.blog-chat-section').appendChild(area);
+            document.getElementById('fiveyoExampleYesBtn').onclick = async function() {
+                area.style.display = 'none';
+                addMessage('user', 'Your Response', 'Yes!');
+                document.getElementById('loading').style.display = 'block';
+                const response = await fetch('/api/process', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'fiveyo_example_yes',
+                        grade_level: currentSessionData.standard,
+                        subject: currentSessionData.subject,
+                        topic: currentSessionData.topic,
+                        student_id: currentSessionData.student_id
+                    })
+                });
+                const result = await response.json();
+                document.getElementById('loading').style.display = 'none';
+                if (result.error) {
+                    addMessage('bot', 'Error', `Sorry, I encountered an error: ${result.error}`);
+                } else {
+                    addMessage('bot', 'Super Teacher', formatResponse(result.response));
+                    showAskAnotherSection();
+                }
+            };
+            document.getElementById('fiveyoExampleNoBtn').onclick = async function() {
+                area.style.display = 'none';
+                addMessage('user', 'Your Response', 'No');
+                document.getElementById('loading').style.display = 'block';
+                const response = await fetch('/api/process', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'fiveyo_example_no',
+                        grade_level: currentSessionData.standard,
+                        subject: currentSessionData.subject,
+                        topic: currentSessionData.topic,
+                        student_id: currentSessionData.student_id
+                    })
+                });
+                const result = await response.json();
+                document.getElementById('loading').style.display = 'none';
+                if (result.error) {
+                    addMessage('bot', 'Error', `Sorry, I encountered an error: ${result.error}`);
+                } else {
+                    addMessage('bot', 'Super Teacher', formatResponse(result.response));
+                    showAskAnotherSection();
+                }
+            };
+        }
+
+        async function handleExplanationAction(action) {
+            document.getElementById('explanationButtons').style.display = 'none';
+            document.getElementById('loading').style.display = 'block';
+            // Add user message for action
+            let userMsg = action === 'understand' ? 'I understand!' : 'I want to take a quiz!';
+            addMessage('user', 'Your Response', userMsg);
+            try {
+                const response = await fetch('/api/process', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: action,
+                        grade_level: currentSessionData.standard,
+                        subject: currentSessionData.subject,
+                        topic: currentSessionData.topic,
+                        student_id: currentSessionData.student_id
+                    })
+                });
+                const result = await response.json();
+                document.getElementById('loading').style.display = 'none';
+                if (result.error) {
+                    addMessage('bot', 'Error', `Sorry, I encountered an error: ${result.error}`);
+                } else if (result.type === 'appreciation') {
+                    addMessage('bot', 'Super Teacher', formatResponse(result.response));
+                    showAskAnotherSection();
+                } else if (result.type === 'quiz') {
+                    if (result.response.error || !result.response.questions || result.response.questions.length === 0) {
+                        addMessage('bot', 'Quiz Error', result.response.error || 'Sorry, I could not generate a quiz for this topic.');
+                    } else {
+                        startQuizFlow(result.response);
+                    }
+                } else {
+                    addMessage('bot', 'Super Teacher', formatResponse(result.response));
+                    showAskAnotherSection();
+                }
+            } catch (error) {
+                document.getElementById('loading').style.display = 'none';
+                addMessage('bot', 'Error', 'Network error. Please try again.');
+            }
+        }
+
+        function showAskAnotherSection() {
+            document.getElementById('askAnotherSection').style.display = 'block';
+            document.getElementById('askAnotherCard').onclick = function() {
+                showAskAnotherForm();
+            };
+        }
+
+        // Remove any previous Ask Another form logic
+        function showAskAnotherForm() {
+            document.getElementById('askAnotherSection').style.display = 'none';
+            // Remove any existing modal
+            const oldModal = document.getElementById('askAnotherModalOverlay');
+            if (oldModal) oldModal.remove();
+            // Create modal overlay
+            const overlay = document.createElement('div');
+            overlay.className = 'ask-another-modal-overlay';
+            overlay.id = 'askAnotherModalOverlay';
+            overlay.innerHTML = `
+                <div class="ask-another-modal">
+                    <button class="close-modal-btn" id="closeAskAnotherModal" title="Close">&times;</button>
+                    <h6><i class="fas fa-question-circle"></i> Ask Another Question</h6>
+                    <form id="askAnotherForm">
+                        <div class="form-group">
+                            <label class="form-label">Standard</label>
+                            <select class="form-select" id="askStandard" name="askStandard" required>
+                                <option value="">Select Standard</option>
+                                <option value="9th">9th</option>
+                                <option value="10th">10th</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Subject</label>
+                            <select class="form-select" id="askSubject" name="askSubject" required>
+                                <option value="">Select Subject</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Chapter</label>
+                            <select class="form-select" id="askChapter" name="askChapter" required>
+                                <option value="">Select Chapter</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Topic</label>
+                            <select class="form-select" id="askTopic" name="askTopic" required>
+                                <option value="">Select Topic</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Your Question</label>
+                            <textarea class="form-control" id="askQuestion" name="askQuestion" rows="2" 
+                                      placeholder="What would you like to know? (e.g., 'Give me examples', 'Explain applications')" required></textarea>
+                        </div>
+                        <button type="submit" class="btn-submit">
+                            <i class="fas fa-paper-plane"></i> Ask
+                        </button>
+                    </form>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+            // Focus first field
+            setTimeout(() => { document.getElementById('askStandard').focus(); }, 100);
+            // Close modal logic
+            document.getElementById('closeAskAnotherModal').onclick = function() {
+                overlay.remove();
+            };
+            overlay.onclick = function(e) {
+                if (e.target === overlay) overlay.remove();
+            };
+            // Initialize the form dropdowns
+            document.getElementById('askStandard').addEventListener('change', loadAskSubjects);
+            document.getElementById('askSubject').addEventListener('change', loadAskChapters);
+            document.getElementById('askChapter').addEventListener('change', loadAskTopics);
+            // Handle form submission
+            document.getElementById('askAnotherForm').addEventListener('submit', function(e) {
+                handleAskAnotherSubmit(e);
+                overlay.remove();
+            });
+        }
+
+        async function loadAskSubjects() {
+            const standardSelect = document.getElementById('askStandard');
+            const subjectSelect = document.getElementById('askSubject');
+            const chapterSelect = document.getElementById('askChapter');
+            const topicSelect = document.getElementById('askTopic');
+            
+            const selectedStandard = standardSelect.value;
+            
+            // Reset dependent dropdowns
+            subjectSelect.innerHTML = '<option value="">Select Subject</option>';
+            chapterSelect.innerHTML = '<option value="">Select Chapter</option>';
+            topicSelect.innerHTML = '<option value="">Select Topic</option>';
+            
+            if (!selectedStandard) return;
+            
+            try {
+                const response = await fetch('/api/subjects', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        standard: selectedStandard
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.subjects) {
+                    result.subjects.forEach(subject => {
+                        const option = document.createElement('option');
+                        option.value = subject;
+                        option.textContent = subject;
+                        subjectSelect.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading subjects:', error);
+            }
+        }
+
+        async function loadAskChapters() {
+            const standardSelect = document.getElementById('askStandard');
+            const subjectSelect = document.getElementById('askSubject');
+            const chapterSelect = document.getElementById('askChapter');
+            const topicSelect = document.getElementById('askTopic');
+            
+            const selectedStandard = standardSelect.value;
+            const selectedSubject = subjectSelect.value;
+            
+            // Reset dependent dropdowns
+            chapterSelect.innerHTML = '<option value="">Select Chapter</option>';
+            topicSelect.innerHTML = '<option value="">Select Topic</option>';
+            
+            if (!selectedStandard || !selectedSubject) return;
+            
+            try {
+                const response = await fetch('/api/chapters', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        standard: selectedStandard,
+                        subject: selectedSubject
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.chapters) {
+                    result.chapters.forEach(chapter => {
+                        const option = document.createElement('option');
+                        option.value = chapter;
+                        option.textContent = chapter;
+                        chapterSelect.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading chapters:', error);
+            }
+        }
+
+        async function loadAskTopics() {
+            const standardSelect = document.getElementById('askStandard');
+            const subjectSelect = document.getElementById('askSubject');
+            const chapterSelect = document.getElementById('askChapter');
+            const topicSelect = document.getElementById('askTopic');
+            
+            const selectedStandard = standardSelect.value;
+            const selectedSubject = subjectSelect.value;
+            const selectedChapter = chapterSelect.value;
+            
+            // Reset dependent dropdown
+            topicSelect.innerHTML = '<option value="">Select Topic</option>';
+            
+            if (!selectedStandard || !selectedSubject || !selectedChapter) return;
+            
+            try {
+                const response = await fetch('/api/topics', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        standard: selectedStandard,
+                        subject: selectedSubject,
+                        chapter: selectedChapter
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.topics) {
+                    result.topics.forEach(topic => {
+                        const option = document.createElement('option');
+                        option.value = topic;
+                        option.textContent = topic;
+                        topicSelect.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading topics:', error);
+            }
+        }
+
+        async function handleAskAnotherSubmit(e) {
+            e.preventDefault();
+            
+            const data = {
+                standard: document.getElementById('askStandard').value,
+                subject: document.getElementById('askSubject').value,
+                chapter: document.getElementById('askChapter').value,
+                topic: document.getElementById('askTopic').value,
+                user_question: document.getElementById('askQuestion').value,
+                student_id: currentSessionData.student_id
+            };
+
+            // Update current session data
+            currentSessionData = data;
+
+            // Add user message
+            addMessage('user', 'New Question', `Standard: ${data.standard}\nSubject: ${data.subject}\nChapter: ${data.chapter}\nTopic: ${data.topic}\nQuestion: ${data.user_question}`);
+
+            // Show loading
+            document.getElementById('loading').style.display = 'block';
+
+            // Create the new prompt with all context
+            const newPrompt = createAskAnotherMessage(data);
+
+            try {
+                const response = await fetch('/api/process', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        user_input: newPrompt,
+                        grade_level: data.standard,
+                        subject: data.subject,
+                        topic: data.topic,
+                        student_id: data.student_id,
+                        action: 'hook'
+                    })
+                });
+
+                const result = await response.json();
+                document.getElementById('loading').style.display = 'none';
+
+                if (result.error) {
+                    addMessage('bot', 'Error', `Sorry, I encountered an error: ${result.error}`);
+                } else if (result.type === 'hook') {
+                    addMessage('bot', 'Super Teacher', formatResponse(result.response));
+                    showHookButtons();
+                } else {
+                    addMessage('bot', 'Super Teacher', formatResponse(result.response));
+                    showExplanationButtons();
+                }
+            } catch (error) {
+                document.getElementById('loading').style.display = 'none';
+                addMessage('bot', 'Error', 'Network error. Please try again.');
+            }
+        }
+
+        function createAskAnotherMessage(data) {
+            return `The student wants to ask another question about "${data.topic}" in ${data.subject} (grade ${data.standard}).
+
+Context:
+- Standard: ${data.standard}
+- Subject: ${data.subject}
+- Chapter: ${data.chapter}
+- Topic: ${data.topic}
+- Student's specific question/prompt: "${data.user_question}"
+
+Please provide a helpful response that directly addresses their question. If they're asking for examples, applications, or a brief explanation, give them exactly what they're looking for. If they want a detailed explanation, provide that instead.
+
+Make sure your response is appropriate for their grade level and addresses their specific question.`;
+        }
+
+        // Quiz flow
+        let quizData = null;
+        let currentQuizIndex = 0;
+        let userQuizAnswers = {};
+
+        function startQuizFlow(quiz) {
+            quizData = quiz;
+            currentQuizIndex = 0;
+            userQuizAnswers = {};
+            document.getElementById('quizArea').style.display = 'block';
+            showQuizQuestion();
+        }
+
+        function showQuizQuestion() {
+            const quizArea = document.getElementById('quizArea');
+            quizArea.innerHTML = '';
+            if (!quizData || !quizData.questions || currentQuizIndex >= quizData.questions.length) {
+                finishQuiz();
+                return;
+            }
+            const q = quizData.questions[currentQuizIndex];
+            let html = `<div class='card p-3 mb-3'><h5>Question ${currentQuizIndex + 1} of ${quizData.questions.length}</h5><p>${q.question}</p>`;
+            html += '<div class="quiz-options-grid">';
+            for (const opt of ['A', 'B', 'C', 'D']) {
+                if (q.options && q.options[opt]) {
+                    const selected = userQuizAnswers[currentQuizIndex] === opt ? 'active' : '';
+                    html += `<div class='quiz-option-card ${selected}' tabindex="0" data-opt='${opt}'>
+                        <span class="quiz-option-icon">${opt}</span>
+                        <span class="quiz-option-text">${q.options[opt]}</span>
+                    </div>`;
+                }
+            }
+            html += '</div></div>';
+            quizArea.innerHTML = html;
+            // Add event listeners
+            document.querySelectorAll('.quiz-option-card').forEach(card => {
+                card.onclick = function() {
+                    userQuizAnswers[currentQuizIndex] = this.getAttribute('data-opt');
+                    currentQuizIndex++;
+                    showQuizQuestion();
+                };
+                card.onkeydown = function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        this.click();
+                    }
+                };
+            });
+        }
+
+        function finishQuiz() {
+            document.getElementById('quizArea').style.display = 'none';
+            // Debug: log answers
+            console.log("Submitting answers:", userQuizAnswers);
+            fetch('/api/quiz/grade', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    quiz_data: quizData,
+                    student_answers: userQuizAnswers
+                })
+            })
+            .then(res => res.json())
+            .then(result => {
+                if (result.error) {
+                    addMessage('bot', 'Quiz Error', result.error);
+                    return;
+                }
+                // Show score
+                addMessage('bot', 'Quiz Results', `You scored ${result.score_percentage}% (${result.correct_answers} out of ${result.total_questions})!`);
+                // Show wrong answers
+                if (result.detailed_results) {
+                    let wrongs = result.detailed_results.filter(r => !r.is_correct);
+                    if (wrongs.length > 0) {
+                        let html = '<b>Here are the questions you missed:</b><ul>';
+                        for (const w of wrongs) {
+                            html += `<li><b>Q:</b> ${w.question}<br><b>Your answer:</b> ${w.student_answer || 'No answer'}<br><b>Correct answer:</b> ${w.correct_answer}<br><b>Explanation:</b> ${w.explanation}</li>`;
+                        }
+                        html += '</ul>';
+                        addMessage('bot', 'Review', html);
+                    }
+                }
+                // Show motivational message
+                if (result.feedback) {
+                    addMessage('bot', 'Super Teacher', result.feedback);
+                }
+                // Show ask another option after quiz
+                showAskAnotherSection();
+            })
+            .catch(() => {
+                addMessage('bot', 'Quiz Error', 'There was a problem grading your quiz.');
+            });
+        }
+    </script>
+</body>
+</html> 
